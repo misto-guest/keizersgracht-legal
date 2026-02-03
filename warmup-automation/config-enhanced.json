@@ -1,0 +1,67 @@
+{
+  "timeOnPage": {
+    "trends": {
+      "min": 8,
+      "max": 15,
+      "description": "Time to scan Google Trends page (human-like scanning)"
+    },
+    "newsSearch": {
+      "min": 5,
+      "max": 12,
+      "description": "Time to review search results before clicking"
+    },
+    "article": {
+      "min": 20,
+      "max": 45,
+      "description": "Time to read the article (simulated reading)"
+    },
+    "scrollPause": {
+      "min": 0.5,
+      "max": 2,
+      "description": "Pause between scroll actions"
+    }
+  },
+  "scroll": {
+    "amount": {
+      "min": 100,
+      "max": 400,
+      "description": "Pixels to scroll per action (varies randomly)"
+    },
+    "count": {
+      "min": 1,
+      "max": 4,
+      "description": "Number of scrolls to perform (randomized)"
+    }
+  },
+  "mouse": {
+    "moveCount": {
+      "min": 2,
+      "max": 5,
+      "description": "Random mouse movements per page"
+    }
+  },
+  "typing": {
+    "delay": {
+      "min": 50,
+      "max": 150,
+      "description": "Milliseconds per character (human typing speed)"
+    }
+  },
+  "browser": {
+    "headless": false,
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "automation": {
+    "numTrendsToProcess": 1,
+    "description": "Number of top trends to process (1-10)"
+  },
+  "antiDetection": {
+    "hideWebdriver": true,
+    "fakePlugins": true,
+    "fakeLanguages": true,
+    "randomViewportOffset": true
+  }
+}
