@@ -1,8 +1,202 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": "f8b9e9a3-c55e-420e-b398-7802229b58ac",
+      "name": "Admin",
+      "description": "Default admin user with conservative settings",
+      "enabled": true,
+      "config": {
+        "timeOnPage": {
+          "trends": {
+            "min": 15,
+            "max": 25,
+            "description": "Time to scan Google Trends page"
+          },
+          "newsSearch": {
+            "min": 10,
+            "max": 20,
+            "description": "Time to review search results"
+          },
+          "article": {
+            "min": 45,
+            "max": 90,
+            "description": "Time to read the article"
+          },
+          "scrollPause": {
+            "min": 1,
+            "max": 3,
+            "description": "Pause between scrolls"
+          }
+        },
+        "scroll": {
+          "amount": {
+            "min": 50,
+            "max": 200,
+            "description": "Pixels to scroll per action"
+          },
+          "count": {
+            "min": 1,
+            "max": 2,
+            "description": "Number of scrolls"
+          }
+        },
+        "mouse": {
+          "moveCount": {
+            "min": 3,
+            "max": 6,
+            "description": "Random mouse movements"
+          }
+        },
+        "typing": {
+          "delay": {
+            "min": 100,
+            "max": 200,
+            "description": "Milliseconds per character"
+          }
+        },
+        "browser": {
+          "headless": true,
+          "viewport": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        "automation": {
+          "numTrendsToProcess": 1,
+          "description": "Number of trends to process"
+        },
+        "antiDetection": {
+          "hideWebdriver": true,
+          "fakePlugins": true,
+          "fakeLanguages": true,
+          "randomViewportOffset": true
+        }
+      },
+      "schedule": {
+        "enabled": false,
+        "cron": "0 9 * * *"
+      },
+      "createdAt": "2026-02-03T10:49:36.520Z",
+      "lastRun": null,
+      "runCount": 0,
+      "status": "idle"
+    },
+    {
+      "id": "a1c18409-36b8-40a1-8a2a-d6474b466cce",
+      "name": "Test User",
+      "description": "Test user with moderate settings and daily schedule",
+      "enabled": true,
+      "config": {
+        "timeOnPage": {
+          "trends": {
+            "min": 8,
+            "max": 15
+          },
+          "newsSearch": {
+            "min": 5,
+            "max": 12
+          },
+          "article": {
+            "min": 20,
+            "max": 45
+          },
+          "scrollPause": {
+            "min": 0.5,
+            "max": 2
+          }
+        },
+        "scroll": {
+          "amount": {
+            "min": 100,
+            "max": 400
+          },
+          "count": {
+            "min": 1,
+            "max": 4
+          }
+        },
+        "mouse": {
+          "moveCount": {
+            "min": 2,
+            "max": 5
+          }
+        },
+        "typing": {
+          "delay": {
+            "min": 50,
+            "max": 150
+          }
+        }
+      },
+      "schedule": {
+        "enabled": true,
+        "cron": "0 9 * * *"
+      },
+      "createdAt": "2026-02-03T10:49:36.522Z",
+      "lastRun": null,
+      "runCount": 0,
+      "status": "idle"
+    },
+    {
+      "id": "e08e7365-a06e-4209-b9bf-706c003bb272",
+      "name": "Performance",
+      "description": "Fast processing for quick warm-ups",
+      "enabled": false,
+      "config": {
+        "timeOnPage": {
+          "trends": {
+            "min": 3,
+            "max": 8
+          },
+          "newsSearch": {
+            "min": 2,
+            "max": 5
+          },
+          "article": {
+            "min": 10,
+            "max": 20
+          },
+          "scrollPause": {
+            "min": 0.3,
+            "max": 1
+          }
+        },
+        "scroll": {
+          "amount": {
+            "min": 200,
+            "max": 600
+          },
+          "count": {
+            "min": 2,
+            "max": 6
+          }
+        },
+        "mouse": {
+          "moveCount": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        "typing": {
+          "delay": {
+            "min": 30,
+            "max": 80
+          }
+        }
+      },
+      "schedule": {
+        "enabled": false,
+        "cron": null
+      },
+      "createdAt": "2026-02-03T10:49:36.522Z",
+      "lastRun": null,
+      "runCount": 0,
+      "status": "idle"
+    }
+  ],
   "metadata": {
-    "created": null,
-    "lastModified": null,
+    "created": "2026-02-03T10:49:36.521Z",
+    "lastModified": "2026-02-03T10:49:36.522Z",
     "version": "2.0.0"
   }
 }
