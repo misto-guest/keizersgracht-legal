@@ -319,3 +319,162 @@ open screenshots/vcc-automated/
 2. **Client Components** - Added `'use client'` to Footer.tsx for form handlers
 3. **Tailwind Theme** - Added custom amber and rose colors via `@theme` directive
 4. **Directory Management** - Removed parent `vercel.json` during deployment to prevent conflicts
+
+---
+
+## 2026-02-06: AdsPower Control Strategy - Default Method Decision
+
+### Hardware Capability
+
+**Mac mini M2 Pro Specifications:**
+- Chip: Apple M2 Pro (10 cores: 6 performance + 4 efficiency)
+- RAM: 32 GB unified memory
+- AdsPower Global: Installed and running
+- Profile Capacity: 90-180 theoretical, 50-75 realistic
+
+**Recommended Concurrent Usage:**
+- Comfortable: 30-50 profiles simultaneously
+- Optimal: 25 profiles for long-running tasks
+- Maximum: 75-100 profiles (with performance trade-offs)
+
+### DEFAULT CONTROL METHOD: AdsPower Local API
+
+**Decision:** Use AdsPower HTTP REST API as primary control method
+
+**API Endpoint:** `http://127.0.0.1:50325/api/v1`
+
+**Why This Method:**
+- ⚡ **Fastest** - Direct HTTP calls, no browser overhead
+- 💚 **Lightest** - Minimal CPU/RAM usage per operation
+- 🔧 **Most Reliable** - Official API, maintained by AdsPower
+- ✅ **Scalable** - Can manage 100+ profiles efficiently
+- 🎯 **Simple** - REST API, easy to debug and monitor
+
+**Use AdsPower API For:**
+- ✅ Opening/closing profiles (POST /user/open, /user/close)
+- ✅ Listing profiles (GET /user/list)
+- ✅ Creating/deleting profiles (POST /user/create, /user/delete)
+- ✅ Updating profile configs (POST /user/update)
+- ✅ Getting profile details (GET /user/detail)
+- ✅ Configuring proxies
+- ✅ Randomizing fingerprints
+- ✅ Batch operations
+
+**Command Examples:**
+```bash
+# List all profiles
+curl http://127.0.0.1:50325/api/v1/user/list
+
+# Open a specific profile
+curl -X POST http://127.0.0.1:50325/api/v1/user/open \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "profile_id"}'
+
+# Close a profile
+curl -X POST http://127.0.0.1:50325/api/v1/user/close \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "profile_id"}'
+```
+
+### SECONDARY METHOD: Clawdbot Browser Tool
+
+**When to Use:**
+- Taking screenshots of web pages
+- Interacting with forms/buttons
+- Extracting data from pages
+- JavaScript execution in page context
+- Visual verification of operations
+
+**Integration Pattern:**
+1. Open profile via AdsPower API
+2. Get profile's remote debugging port
+3. Connect Clawdbot browser tool to profile
+4. Perform page automation
+5. Close profile via API
+
+### TERTIARY METHOD: Puppeteer (Rarely Needed)
+
+**When to Use:**
+- Complex multi-step workflows
+- Advanced scraping operations
+- Custom automation scripts
+- When browser tool features insufficient
+
+**Implementation:**
+```javascript
+const browser = await puppeteer.connect({
+  browserWSEndpoint: `ws://localhost:${profilePort}/devtools/browser/...`
+});
+```
+
+### Performance Best Practices
+
+**For Speed:**
+- Use AdsPower API for ALL profile management
+- Batch API calls when possible
+- Run 10-20 parallel requests
+- Cache profile lists locally
+- Reuse open profiles when possible
+
+**For Resources:**
+- Close profiles immediately after use
+- Keep ≤25 profiles open simultaneously
+- Use lightweight fingerprint configs
+- Disable unnecessary browser features
+- Monitor memory usage: `ps aux | grep adspower`
+
+**For Stability:**
+- Add error handling + retry logic (3 attempts)
+- Use exponential backoff for failures
+- Monitor API response times
+- Implement fallback to secondary methods
+
+### Recommended Limits
+
+- **API calls:** 100+ per minute (rate limit permitting)
+- **Open profiles:** 25-50 simultaneously (production)
+- **Browser automation:** 10-15 concurrent (optimal)
+- **Batch operations:** 15-20 profiles per batch
+
+### Standard Workflow
+
+```
+1. List profiles → API: GET /user/list
+2. Select/filter → Logic
+3. Open profiles → API: POST /user/open (batch 10-20)
+4. Automate tasks → Browser tool (parallel 10-15)
+5. Close profiles → API: POST /user/close (batch 10-20)
+```
+
+### Error Handling Strategy
+
+**Retry Logic:**
+```javascript
+async function apiCall(url, options, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fetch(url, options);
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await sleep(Math.pow(2, i) * 1000); // Exponential backoff
+    }
+  }
+}
+```
+
+### Documentation References
+
+- Strategy document: `/Users/northsea/clawd-dmitry/ADSPOWER_CONTROL_STRATEGY.md`
+- Hardware analysis: `/Users/northsea/clawd-dmitry/ADSPOWER_ANALYSIS.md`
+- Original setup: `/Users/northsea/clawd-dmitry/warmup-automation/ADSPOWER_SETUP.md`
+
+### Key Takeaways
+
+1. **Default to AdsPower API** - Fastest, lightest, most reliable
+2. **Browser tool for pages** - Only when page interaction needed
+3. **Puppeteer last resort** - Only for complex workflows
+4. **Monitor resources** - Keep ≤50 profiles open
+5. **Batch operations** - Process 15-20 at a time for efficiency
+6. **Close promptly** - Don't leave profiles idle
+
+**This strategy provides optimal performance for managing 50+ AdsPower profiles with minimal resource usage.**
