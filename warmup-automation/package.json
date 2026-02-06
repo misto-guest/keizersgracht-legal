@@ -4,9 +4,11 @@
   "description": "Chrome warm-up automation with user management and CRUD panel",
   "main": "warmup-user-aware.js",
   "scripts": {
-    "start": "node warmup-user-aware.js",
-    "server": "node server/index.js",
-    "dev": "node server/index.js",
+    "start": "node dashboard-server.js",
+    "dev": "node dashboard-server.js",
+    "deploy": "vercel --prod",
+    "deploy:dev": "vercel",
+    "logs": "vercel logs",
     "create-admin": "node scripts/create-admin-user.js"
   },
   "keywords": [

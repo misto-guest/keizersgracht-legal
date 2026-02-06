@@ -1,0 +1,12 @@
+{
+  "accounts": [
+    {
+      "email": "patmcgee727@gmail.com",
+      "profileId": "k12am9a2",
+      "name": "Pat McGee",
+      "status": "new"
+    }
+  ],
+  "lastUpdated": "2026-02-03T21:18:08.899Z",
+  "notes": "Add your Gmail accounts here with corresponding AdsPower profile IDs"
+}

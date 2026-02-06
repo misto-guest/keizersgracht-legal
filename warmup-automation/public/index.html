@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Warmup Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background: #f5f5f5; 
+            padding: 10px; 
+            font-size: 14px;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        
+        h1 { 
+            color: #333; 
+            margin-bottom: 5px; 
+            font-size: 24px;
+        }
+        
+        .subtitle { 
+            color: #666; 
+            margin-bottom: 15px; 
+            font-size: 12px; 
+        }
+        
+        .notice { 
+            background: #fff3cd; 
+            border: 1px solid #ffc107; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            font-size: 13px;
+        }
+        
+        .notice-title { 
+            font-weight: 600; 
+            margin-bottom: 5px; 
+        }
+        
+        /* Stats Grid - Mobile Optimized */
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+        
+        @media (min-width: 768px) {
+            .stats {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 15px;
+            }
+        }
+        
+        .stat-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            text-align: center;
+        }
+        
+        .stat-card h3 { 
+            color: #666; 
+            font-size: 11px; 
+            margin-bottom: 8px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card .value { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #333; 
+        }
+        
+        .stat-card.new .value { color: #2196F3; }
+        .stat-card.needs_warmup .value { color: #FF9800; }
+        .stat-card.warming_up .value { color: #9C27B0; }
+        .stat-card.warmed .value { color: #4CAF50; }
+        
+        /* Accounts Section */
+        .accounts-section { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        
+        .accounts-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .accounts-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .btn { 
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .btn-primary { 
+            background: #2196F3; 
+            color: white; 
+        }
+        
+        .btn-primary:hover { 
+            background: #1976D2; 
+        }
+        
+        .btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+        }
+        
+        /* Mobile Table - Card View */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        
+        @media (max-width: 767px) {
+            /* Hide table on mobile, show cards instead */
+            thead { display: none; }
+            
+            tbody {
+                display: block;
+            }
+            
+            tr {
+                display: block;
+                background: #f9f9f9;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            
+            td {
+                display: block;
+                padding: 5px 0;
+                border: none;
+            }
+            
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #666;
+                display: inline-block;
+                width: 80px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            th, td { 
+                padding: 12px; 
+                text-align: left; 
+                border-bottom: 1px solid #eee; 
+                font-size: 14px;
+            }
+            
+            th { 
+                background: #f9f9f9; 
+                font-weight: 600; 
+                color: #666; 
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            td::before {
+                display: none;
+            }
+        }
+        
+        /* Status Badges */
+        .status-badge { 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            display: inline-block;
+        }
+        
+        .status-new { background: #E3F2FD; color: #1976D2; }
+        .status-needs_warmup { background: #FFF3E0; color: #F57C00; }
+        .status-warming_up { background: #F3E5F5; color: #7B1FA2; }
+        .status-warmed { background: #E8F5E9; color: #388E3C; }
+        
+        /* VCC Badges */
+        .vcc-badge { 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            font-size: 10px; 
+            margin-left: 5px; 
+            font-weight: 600;
+        }
+        
+        .vcc-yes { background: #E8F5E9; color: #388E3C; }
+        .vcc-no { background: #FFEBEE; color: #D32F2F; }
+        
+        .vcc-info { 
+            font-size: 11px; 
+            color: #666; 
+            margin-top: 3px; 
+        }
+        
+        /* Logs Section */
+        #logs { 
+            margin-top: 20px; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+        }
+        
+        #logs h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        #logs-content {
+            background: #f9f9f9; 
+            padding: 12px; 
+            border-radius: 6px; 
+            overflow: auto; 
+            max-height: 250px; 
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        
+        .loading { 
+            text-align: center; 
+            padding: 20px; 
+            color: #666; 
+            font-size: 13px;
+        }
+        
+        /* Email truncation on mobile */
+        @media (max-width: 767px) {
+            .email-truncate {
+                font-size: 12px;
+                word-break: break-all;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Gmail Warmup</h1>
+        <p class="subtitle">Vercel Demo • Local for full features</p>
+        
+        <div class="notice">
+            <div class="notice-title">⚠️ Demo Mode</div>
+            This is a read-only preview. For warmup execution, run locally with <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">./deploy-dashboard.sh</code>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total</h3>
+                <div class="value" id="total-accounts">-</div>
+            </div>
+            <div class="stat-card new">
+                <h3>New</h3>
+                <div class="value" id="new-count">-</div>
+            </div>
+            <div class="stat-card needs_warmup">
+                <h3>Needs<br>Warmup</h3>
+                <div class="value" id="needs-warmup-count">-</div>
+            </div>
+            <div class="stat-card warming_up">
+                <h3>Warming<br>Up</h3>
+                <div class="value" id="warming-count">-</div>
+            </div>
+            <div class="stat-card warmed">
+                <h3>Warmed</h3>
+                <div class="value" id="warmed-count">-</div>
+            </div>
+        </div>
+        
+        <div class="accounts-section">
+            <div class="accounts-header">
+                <h2>Accounts</h2>
+                <button class="btn btn-primary" id="add-account-btn" disabled>+ Add Account</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Profile ID</th>
+                        <th>Status</th>
+                        <th>VCC</th>
+                        <th>Added</th>
+                    </tr>
+                </thead>
+                <tbody id="accounts-table">
+                    <tr><td colspan="6" class="loading">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="logs">
+            <h2>Recent Activity</h2>
+            <pre id="logs-content">Loading...</pre>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Load stats
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/stats`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('total-accounts').textContent = data.stats.totalAccounts;
+                    document.getElementById('new-count').textContent = data.stats.statusCounts.new;
+                    document.getElementById('needs-warmup-count').textContent = data.stats.statusCounts.needs_warmup;
+                    document.getElementById('warming-count').textContent = data.stats.statusCounts.warming_up;
+                    document.getElementById('warmed-count').textContent = data.stats.statusCounts.warmed;
+                }
+            } catch (error) {
+                console.error('Stats error:', error);
+            }
+        }
+        
+        // Load accounts
+        async function loadAccounts() {
+            try {
+                const res = await fetch(`${API_BASE}/api/accounts`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const tbody = document.getElementById('accounts-table');
+                    
+                    if (data.accounts.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No accounts yet.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = data.accounts.map(acc => {
+                        const vccBadge = acc.vcc?.added 
+                            ? `<span class="vcc-badge vcc-yes">✓ ${acc.vcc.lastFour || ''}</span>`
+                            : `<span class="vcc-badge vcc-no">✗</span>`;
+                        
+                        const vccInfo = acc.vcc?.added 
+                            ? `<div class="vcc-info">${acc.vccType || ''}</div>`
+                            : '';
+                        
+                        const statusClass = acc.status || 'new';
+                        const statusLabel = (acc.status || 'new').replace('_', ' ');
+                        
+                        return `
+                        <tr>
+                            <td data-label="Email" class="email-truncate">${acc.email}</td>
+                            <td data-label="Name">${acc.name || '-'}</td>
+                            <td data-label="Profile ID">${acc.profileId}</td>
+                            <td data-label="Status"><span class="status-badge status-${statusClass}">${statusLabel}</span></td>
+                            <td data-label="VCC">${vccBadge}${vccInfo}</td>
+                            <td data-label="Added">${new Date(acc.addedAt).toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Accounts error:', error);
+                document.getElementById('accounts-table').innerHTML = '<tr><td colspan="6" class="loading">Failed to load</td></tr>';
+            }
+        }
+        
+        // Load logs
+        async function loadLogs() {
+            try {
+                const res = await fetch(`${API_BASE}/api/warmup/logs?limit=20`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const logsContent = document.getElementById('logs-content');
+                    if (data.logs.length === 0) {
+                        logsContent.textContent = 'No activity yet.';
+                    } else {
+                        logsContent.textContent = JSON.stringify(data.logs, null, 2);
+                    }
+                }
+            } catch (error) {
+                console.error('Logs error:', error);
+            }
+        }
+        
+        // Initial load
+        loadStats();
+        loadAccounts();
+        loadLogs();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadStats();
+            loadAccounts();
+            loadLogs();
+        }, 30000);
+    </script>
+</body>
+</html>

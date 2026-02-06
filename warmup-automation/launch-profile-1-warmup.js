@@ -20,6 +20,48 @@ const PROFILE_ID = 'k12am9a2'; // Profile 1 user ID
 const SCREENSHOT_DIR = './screenshots/profile-1-warmup';
 const WARMUP_DURATION = 300; // 5 minutes for testing
 
+// Helper function to replace deprecated waitForTimeout
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Cookie consent handler
+async function handleCookieConsent(page) {
+    try {
+        // Common cookie consent selectors
+        const cookieSelectors = [
+            'button[aria-label*="Accept"]',
+            'button[aria-label*="accept"]',
+            'button:has-text("Accept")',
+            'button:has-text("Accept all")',
+            'button:has-text("Accept cookies")',
+            'button[id*="cookie"]',
+            'button[class*="cookie"]',
+            'button[onclick*="cookie"]',
+            '.cookie-banner button',
+            '#cookie-banner button',
+            '[data-testid="cookie-accept"]',
+            'button:text("Akkoord")',  // Dutch
+            'button:text("Accepteer")', // Dutch
+            'button:text("Ik ga akkoord")', // Dutch
+        ];
+
+        for (const selector of cookieSelectors) {
+            try {
+                await page.waitForSelector(selector, { timeout: 1000 });
+                await page.click(selector);
+                console.log('✅ Accepted cookies');
+                await wait(500);
+                return true;
+            } catch (e) {
+                // Selector not found, try next
+                continue;
+            }
+        }
+    } catch (error) {
+        // No cookie banner found or unable to click
+    }
+    return false;
+}
+
 async function launchAndWarmup() {
     console.log('🚀 AdsPower Profile 1 Warmup Test\n');
     console.log('====================================\n');
@@ -45,9 +87,8 @@ async function launchAndWarmup() {
         return;
     }
 
-    // Step 2: Get Profile Info
+    // Step 2: Get Profile Info (optional - skip if fails)
     console.log('\n2️⃣ Getting Profile 1 information...');
-    let profileInfo;
     try {
         profileInfo = await client.getProfileInfo(PROFILE_ID);
         console.log(`✅ Profile found: ${profileInfo.name || 'Unnamed'}`);
@@ -55,8 +96,8 @@ async function launchAndWarmup() {
         console.log(`   Browser: ${profileInfo.browser_type || 'Unknown'}`);
         console.log(`   OS: ${profileInfo.os || 'Unknown'}`);
     } catch (error) {
-        console.log('❌ Error getting profile info:', error.message);
-        return;
+        console.log('⚠️  Could not get profile info (continuing anyway):', error.message);
+        console.log(`   Using profile ID: ${PROFILE_ID}`);
     }
 
     // Step 3: Launch Profile
@@ -107,7 +148,7 @@ async function launchAndWarmup() {
         try {
             // Navigate to Gmail
             await page.goto('https://mail.google.com', { waitUntil: 'networkidle2', timeout: 15000 });
-            await page.waitForTimeout(3000);
+            await wait(3000);
 
             const url = page.url();
             console.log(`   Current URL: ${url}`);
@@ -158,7 +199,8 @@ async function runWarmupActivities(page, screenshotDir) {
             action: async () => {
                 console.log('📧 Checking Gmail...');
                 await page.goto('https://mail.google.com', { waitUntil: 'networkidle2', timeout: 15000 });
-                await page.waitForTimeout(3000);
+                await handleCookieConsent(page);
+                await wait(3000);
             }
         },
         {
@@ -166,12 +208,13 @@ async function runWarmupActivities(page, screenshotDir) {
             action: async () => {
                 console.log('🔍 Performing Google search...');
                 await page.goto('https://www.google.com', { waitUntil: 'networkidle2' });
+                await handleCookieConsent(page);
                 const searchBox = await page.$('textarea[name="q"]') || await page.$('input[name="q"]');
                 if (searchBox) {
                     await searchBox.click();
                     await searchBox.type('latest technology news');
                     await page.keyboard.press('Enter');
-                    await page.waitForTimeout(5000);
+                    await wait(5000);
                 }
             }
         },
@@ -180,7 +223,8 @@ async function runWarmupActivities(page, screenshotDir) {
             action: async () => {
                 console.log('🇳🇱 Visiting Dutch news site (nu.nl)...');
                 await page.goto('https://www.nu.nl', { waitUntil: 'networkidle2', timeout: 15000 });
-                await page.waitForTimeout(5000);
+                await handleCookieConsent(page);
+                await wait(5000);
             }
         },
         {
@@ -188,7 +232,8 @@ async function runWarmupActivities(page, screenshotDir) {
             action: async () => {
                 console.log('💻 Visiting tech site (tweakers.net)...');
                 await page.goto('https://tweakers.net', { waitUntil: 'networkidle2', timeout: 15000 });
-                await page.waitForTimeout(5000);
+                await handleCookieConsent(page);
+                await wait(5000);
             }
         }
     ];
@@ -210,7 +255,7 @@ async function runWarmupActivities(page, screenshotDir) {
             // Random pause
             const pauseTime = Math.floor(Math.random() * 3000) + 2000;
             console.log(`⏸️  Pausing for ${pauseTime}ms...`);
-            await page.waitForTimeout(pauseTime);
+            await wait(pauseTime);
 
         } catch (error) {
             console.log(`⚠️  Activity failed: ${error.message}`);

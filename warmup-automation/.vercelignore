@@ -1,0 +1,9 @@
+# Vercel deployment files
+.vercel
+node_modules/
+screenshots/
+logs/
+*.log
+.env.local
+.env
+.git

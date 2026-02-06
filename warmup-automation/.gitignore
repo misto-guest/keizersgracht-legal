@@ -29,3 +29,4 @@ config.local.json
 # Build outputs
 dist/
 build/
+.vercel

@@ -1,0 +1,63 @@
+{
+  "k12am9a2": {
+    "routineName": "Standard Warmup",
+    "activities": [
+      {
+        "key": "gmail",
+        "name": "GMail",
+        "url": "https://mail.google.com",
+        "duration": 3343,
+        "actions": [
+          "read",
+          "compose",
+          "search"
+        ]
+      },
+      {
+        "key": "google_search",
+        "name": "Google Search",
+        "url": "https://www.google.com",
+        "duration": 5721,
+        "actions": [
+          "search",
+          "click_results",
+          "image_search"
+        ]
+      },
+      {
+        "key": "youtube_watch",
+        "name": "YouTube Watch",
+        "url": "https://www.youtube.com",
+        "duration": 11423,
+        "actions": [
+          "search",
+          "watch",
+          "scroll"
+        ]
+      },
+      {
+        "key": "google_maps",
+        "name": "Google Maps",
+        "url": "https://www.google.com/maps",
+        "duration": 7290,
+        "actions": [
+          "search",
+          "directions",
+          "save_place"
+        ]
+      },
+      {
+        "key": "google_alerts",
+        "name": "Google Alerts",
+        "url": "https://www.google.com/alerts",
+        "duration": 3719,
+        "actions": [
+          "create_alert"
+        ]
+      }
+    ],
+    "estimatedDuration": "10-15 minutes",
+    "intensity": "medium",
+    "generatedAt": "2026-02-04T07:48:18.200Z"
+  }
+}

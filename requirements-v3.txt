@@ -1,0 +1,18 @@
+# Requirements for GPS Campaign Manager v3.0
+# Android Integration + Multi-User Support
+
+# Core dependencies
+Flask>=2.0.0
+Flask-SocketIO>=5.0.0
+python-socketio>=5.0.0
+
+# Authentication
+PyJWT>=2.4.0
+bcrypt>=4.0.0
+
+# Database
+# sqlite3 (built-in)
+
+# Android ADB (system dependency)
+# Install separately: brew install android-platform-tools (macOS)
+#                    sudo apt-get install android-tools-adb (Linux)
