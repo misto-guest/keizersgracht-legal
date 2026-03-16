@@ -1,0 +1,54 @@
+{
+  "adspower": {
+    "remote": {
+      "enabled": true,
+      "server": "77.42.21.134",
+      "port": 50325,
+      "apiKey": "e2ec8f83a615248b26844ce7b4180780000f879a7a0e5329",
+      "cdpPort": 8080,
+      "apiVersion": "v2"
+    },
+    "local": {
+      "enabled": false,
+      "server": "127.0.0.1",
+      "port": 50325,
+      "apiKey": "746feb8ab409fbb27a0377a864279e6c000f879a7a0e5329",
+      "apiVersion": "v1"
+    }
+  },
+  "remoteBrowser": {
+    "enabled": true,
+    "server": "http://95.217.224.154:3000",
+    "apiKey": "REBEL_CLOUD_BROWSER_API_KEY",
+    "notes": "Get API key from 1Password: 'Rebel Cloud Browser api'"
+  },
+  "warmup": {
+    "activitiesPerSession": 5,
+    "minDelayBetweenActions": 3000,
+    "maxDelayBetweenActions": 8000,
+    "timeOnPage": {
+      "trends": { "min": 5, "max": 10 },
+      "newsSearch": { "min": 3, "max": 7 },
+      "article": { "min": 10, "max": 30 }
+    }
+  },
+  "browser": {
+    "headless": false,
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  },
+  "profiles": {
+    "defaultProfileId": "k12am9a2",
+    "clearCacheAfterClosing": true,
+    "browserType": "adspower",
+    "notes": "Set browserType to 'adspower' or 'remote' per profile"
+  },
+  "scaling": {
+    "maxConcurrent": 10,
+    "readyFor100Plus": true,
+    "notes": "System architecture supports 100+ profiles with proper queue management"
+  }
+}
