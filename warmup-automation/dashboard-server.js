@@ -8,7 +8,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const AdsPowerClient = require('./adspower-client');
+// Use remote Adspower client
+const AdsPowerClient = require('./adspower-client-remote');
 const { runEnhancedWarmup } = require('./warmup-enhanced');
 
 const app = express();
@@ -623,9 +624,11 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`
 ╔══════════════════════════════════════════════════════════════╗
-║           Gmail Warmup Dashboard Server                      ║
+║           Gmail Warmup Dashboard Server                       ║
+║           (with Remote Adspower: 77.42.21.134:50325)         ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  URL:        http://localhost:${PORT}                          ║
+║  Adspower:   Remote (77.42.21.134:50325)                     ║
 ║  Data dir:   ${DATA_DIR}                      ║
 ║  Accounts:   ${ACCOUNTS_FILE}                   ║
 ║  Status:     ${STATUS_FILE}                   ║

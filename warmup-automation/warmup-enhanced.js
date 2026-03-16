@@ -3,14 +3,16 @@
  * Supports: Docs, Sheets, Maps, Photos, Alerts, YouTube, Gmail inter-account email
  */
 
-const AdsPowerClient = require('./adspower-client');
-const puppeteer = require('puppeteer');
+// Use remote Adspower client for remote server
+const AdsPowerClient = require('./adspower-client-remote');
+const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 const path = require('path');
 
-// Configuration
+// Configuration - Remote Adspower server
 const CONFIG = {
-    apiKey: '746feb8ab409fbb27a0377a864279e6c000f879a7a0e5329',
+    // Remote Adspower: 77.42.21.134:50325
+    apiKey: 'e2ec8f83a615248b26844ce7b4180780000f879a7a0e5329',
     screenshotDir: './screenshots/enhanced-warmup',
     activitiesPerSession: 5, // Number of activities to run per session
     minDelayBetweenActions: 3000, // 3 seconds
@@ -471,22 +473,30 @@ async function runEnhancedWarmup(profileId, options = {}) {
         fs.mkdirSync(CONFIG.screenshotDir, { recursive: true });
     }
     
+    let browser = null;
+    
     try {
         // Launch profile
         console.log('1️⃣  Launching profile...');
         const launchResult = await client.startProfile(profileId);
         
-        if (!launchResult.ws || !launchResult.ws.puppeteer) {
-            throw new Error('Failed to launch profile');
+        // Remote Adspower returns ws directly, not nested
+        const wsUrl = launchResult.ws && launchResult.ws.puppeteer 
+            ? launchResult.ws.puppeteer 
+            : launchResult.ws;
+            
+        if (!wsUrl) {
+            throw new Error('Failed to launch profile - no WebSocket URL');
         }
         
+        console.log(`   WebSocket: ${wsUrl.substring(0, 60)}...`);
         console.log('✅ Profile launched');
-        await wait(5000);
+        await wait(3000);
         
         // Connect Puppeteer
         console.log('2️⃣  Connecting Puppeteer...');
         const browser = await puppeteer.connect({
-            browserWSEndpoint: launchResult.ws.puppeteer,
+            browserWSEndpoint: wsUrl,
             defaultViewport: null
         });
         
@@ -556,6 +566,27 @@ async function runEnhancedWarmup(profileId, options = {}) {
         console.log(`   Completed: ${completedCount}/${selectedActivities.length} activities`);
         console.log(`   Screenshots: ${CONFIG.screenshotDir}\n`);
         
+        // Close browser properly - pages first, then disconnect
+        console.log('🧹 Closing browser properly...');
+        try {
+            const pages = await browser.pages();
+            for (const p of pages) {
+                try { await p.close(); } catch (e) {}
+            }
+            await browser.disconnect();
+            console.log('   ✅ Browser disconnected');
+        } catch (e) {
+            console.log(`   ⚠️  Browser cleanup warning: ${e.message}`);
+        }
+        
+        // Stop profile via API
+        try {
+            await client.stopProfile(profileId);
+            console.log('   ✅ Profile stopped');
+        } catch (e) {
+            console.log(`   ⚠️  Profile stop warning: ${e.message}`);
+        }
+        
         return {
             success: true,
             completed: completedCount,
@@ -565,6 +596,23 @@ async function runEnhancedWarmup(profileId, options = {}) {
         
     } catch (error) {
         console.log('\n❌ Error:', error.message);
+        
+        // Try to clean up browser
+        if (browser) {
+            try {
+                const pages = await browser.pages();
+                for (const p of pages) {
+                    try { await p.close(); } catch (e) {}
+                }
+                await browser.disconnect();
+            } catch (e) {}
+        }
+        
+        // Try to stop profile
+        try {
+            await client.stopProfile(profileId);
+        } catch (e) {}
+        
         return {
             success: false,
             error: error.message,
